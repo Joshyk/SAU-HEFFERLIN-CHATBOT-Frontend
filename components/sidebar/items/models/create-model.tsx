@@ -21,7 +21,9 @@ export const CreateModel: FC<CreateModelProps> = ({ isOpen, onOpenChange }) => {
   const [description, setDescription] = useState("")
   const [modelId, setModelId] = useState("")
   const [name, setName] = useState("")
-  const [contextLength, setContextLength] = useState(4096)
+  const [contextLength, setContextLength] = useState(
+    Number(process.env.NEXT_PUBLIC_DEFAULT_CONTEXT_LENGTH!)
+  )
 
   if (!profile || !selectedWorkspace) return null
 
@@ -104,7 +106,7 @@ export const CreateModel: FC<CreateModelProps> = ({ isOpen, onOpenChange }) => {
 
             <Input
               type="number"
-              placeholder="4096"
+              placeholder="16384"
               min={0}
               value={contextLength}
               onChange={e => setContextLength(parseInt(e.target.value))}

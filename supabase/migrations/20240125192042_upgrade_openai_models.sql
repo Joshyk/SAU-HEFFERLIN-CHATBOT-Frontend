@@ -92,12 +92,12 @@ BEGIN
         NEW.id,
         TRUE,
         'Home',
-        4096,
-        'gpt-4-turbo-preview', -- Updated default model
+        16384,
+        'llama3.1:latest',   -- Updated default model
         'You are a friendly, helpful AI assistant.',
-        0.5,
+        0.0,
         'My home workspace.',
-        'openai',
+        'local',
         TRUE,
         TRUE,
         ''

@@ -112,7 +112,8 @@ const AdvancedContent: FC<AdvancedContentProps> = ({
     MIN_TEMPERATURE: 0,
     MAX_TEMPERATURE: 1,
     MAX_CONTEXT_LENGTH:
-      findOpenRouterModel(chatSettings.model)?.maxContext || 4096
+      findOpenRouterModel(chatSettings.model)?.maxContext ||
+      Number(process.env.NEXT_PUBLIC_DEFAULT_CONTEXT_LENGTH!)
   }
 
   return (

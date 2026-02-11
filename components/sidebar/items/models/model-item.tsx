@@ -89,7 +89,7 @@ export const ModelItem: FC<ModelItemProps> = ({ model }) => {
 
             <Input
               type="number"
-              placeholder="4096"
+              placeholder={process.env.NEXT_PUBLIC_DEFAULT_CONTEXT_LENGTH!}
               min={0}
               value={contextLength}
               onChange={e => setContextLength(parseInt(e.target.value))}
