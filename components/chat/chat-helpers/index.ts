@@ -154,7 +154,8 @@ export const handleLocalChat = async (
   setIsGenerating: React.Dispatch<React.SetStateAction<boolean>>,
   setFirstTokenReceived: React.Dispatch<React.SetStateAction<boolean>>,
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
-  setToolInUse: React.Dispatch<React.SetStateAction<string>>
+  setToolInUse: React.Dispatch<React.SetStateAction<string>>,
+  chatID: string
 ) => {
   const formattedMessages = await buildFinalMessages(payload, profile, [])
 
@@ -165,7 +166,9 @@ export const handleLocalChat = async (
       model: chatSettings.model,
       messages: formattedMessages,
       options: {
-        temperature: payload.chatSettings.temperature
+        temperature: payload.chatSettings.temperature,
+        username: profile.username,
+        chatID
       }
     },
     false,
@@ -208,9 +211,12 @@ export const handleHostedChat = async (
 
   let draftMessages = await buildFinalMessages(payload, profile, chatImages)
 
-  let formattedMessages : any[] = []
+  let formattedMessages: any[] = []
   if (provider === "google") {
-    formattedMessages = await adaptMessagesForGoogleGemini(payload, draftMessages)
+    formattedMessages = await adaptMessagesForGoogleGemini(
+      payload,
+      draftMessages
+    )
   } else {
     formattedMessages = draftMessages
   }
