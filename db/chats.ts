@@ -1,6 +1,32 @@
 import { supabase } from "@/lib/supabase/browser-client"
 import { TablesInsert, TablesUpdate } from "@/supabase/types"
 
+const notifyChatDeleted = async (chatId: string) => {
+  const ollamaUrl = process.env.NEXT_PUBLIC_OLLAMA_URL
+  if (!ollamaUrl) return
+
+  const webhookUrl = `${ollamaUrl.replace(/\/+$/, "")}/chat/${chatId}`
+
+  try {
+    const response = await fetch(webhookUrl, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        event: "chat.deleted",
+        chatId
+      })
+    })
+
+    if (!response.ok) {
+      console.error("Failed to notify backend of deleted chat:", chatId)
+    }
+  } catch (error) {
+    console.error("Error notifying backend of deleted chat:", error)
+  }
+}
+
 export const getChatById = async (chatId: string) => {
   const { data: chat } = await supabase
     .from("chats")
@@ -76,6 +102,9 @@ export const deleteChat = async (chatId: string) => {
   if (error) {
     throw new Error(error.message)
   }
+
+  // Best-effort webhook after the DB delete succeeds.
+  await notifyChatDeleted(chatId)
 
   return true
 }
