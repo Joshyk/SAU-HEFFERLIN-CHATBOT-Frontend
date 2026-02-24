@@ -7,6 +7,9 @@ export type LLMID =
   | MistralLLMID
   | GroqLLMID
   | PerplexityLLMID
+  | CustomLLMID
+
+export type CustomLLMID = "llama3.1:latest" // Llama 3.1
 
 // OpenAI Models (UPDATED 5/13/24)
 export type OpenAILLMID =
