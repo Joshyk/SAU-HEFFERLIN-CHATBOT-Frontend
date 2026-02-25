@@ -5,8 +5,8 @@ const notifyChatDeleted = async (chatId: string) => {
   const ollamaUrl = process.env.NEXT_PUBLIC_OLLAMA_URL
   if (!ollamaUrl) return
 
-  const webhookUrl = `${ollamaUrl.replace(/\/+$/, "")}/chat/${chatId}`
-
+  const webhookUrl = `${ollamaUrl}/api/chat/${chatId}`
+  
   try {
     const response = await fetch(webhookUrl, {
       method: "DELETE",
