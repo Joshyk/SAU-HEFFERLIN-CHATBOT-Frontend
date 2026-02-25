@@ -157,23 +157,23 @@ export default function WorkspaceLayout({ children }: WorkspaceLayoutProps) {
     setModels(modelData.models)
 
     setChatSettings({
-      model: (searchParams.get("model") ||
-        workspace?.default_model ||
+      model: (searchParams.get("model") ??
+        workspace?.default_model ??
         process.env.NEXT_PUBLIC_DEFAULT_MODEL!) as LLMID,
       prompt:
         workspace?.default_prompt ||
         "You are a friendly, helpful AI assistant.",
       temperature:
-        workspace?.default_temperature ||
+        workspace?.default_temperature ??
         Number(process.env.NEXT_PUBLIC_DEFAULT_TEMPERATURE),
       contextLength:
-        workspace?.default_context_length ||
+        workspace?.default_context_length ??
         Number(process.env.NEXT_PUBLIC_DEFAULT_CONTEXT_LENGTH!),
-      includeProfileContext: workspace?.include_profile_context || true,
+      includeProfileContext: workspace?.include_profile_context ?? true,
       includeWorkspaceInstructions:
-        workspace?.include_workspace_instructions || true,
+        workspace?.include_workspace_instructions ?? true,
       embeddingsProvider:
-        (workspace?.embeddings_provider as "openai" | "local") ||
+        (workspace?.embeddings_provider as "openai" | "local") ??
         process.env.NEXT_PUBLIC_DEFAULT_EMBEDDINGS_PROVIDER!
     })
 
