@@ -167,6 +167,7 @@ export const handleLocalChat = async (
       messages: formattedMessages,
       options: {
         temperature: payload.chatSettings.temperature,
+        contextLength: payload.chatSettings.contextLength,
         username: profile.username,
         chatID
       }
