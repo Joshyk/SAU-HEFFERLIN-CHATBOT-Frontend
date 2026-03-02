@@ -92,7 +92,7 @@ BEGIN
         NEW.id,
         TRUE,
         'Home',
-        16384,
+        32768,
         'llama3.1:latest',   -- Updated default model
         'You are a friendly, helpful AI assistant.',
         0.0,
