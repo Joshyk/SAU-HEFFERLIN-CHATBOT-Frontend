@@ -1,9 +1,9 @@
 import { ContentType } from "@/types"
 import {
   IconAdjustmentsHorizontal,
-  IconBolt,
+  // IconBolt,
   IconBooks,
-  IconFile,
+  // IconFile,
   IconMessage,
   IconPencil,
   IconRobotFace,
@@ -26,7 +26,7 @@ export const SidebarSwitcher: FC<SidebarSwitcherProps> = ({
 }) => {
   return (
     <div className="flex flex-col justify-between border-r-2 pb-5">
-      <TabsList className="bg-background grid h-[440px] grid-rows-7">
+      <TabsList className="bg-background grid h-[360px] grid-rows-7">
         <SidebarSwitchItem
           icon={<IconMessage size={SIDEBAR_ICON_SIZE} />}
           contentType="chats"
@@ -51,11 +51,13 @@ export const SidebarSwitcher: FC<SidebarSwitcherProps> = ({
           onContentTypeChange={onContentTypeChange}
         />
 
+        {/*
         <SidebarSwitchItem
           icon={<IconFile size={SIDEBAR_ICON_SIZE} />}
           contentType="files"
           onContentTypeChange={onContentTypeChange}
         />
+        */}
 
         <SidebarSwitchItem
           icon={<IconBooks size={SIDEBAR_ICON_SIZE} />}
@@ -69,11 +71,13 @@ export const SidebarSwitcher: FC<SidebarSwitcherProps> = ({
           onContentTypeChange={onContentTypeChange}
         />
 
+        {/*
         <SidebarSwitchItem
           icon={<IconBolt size={SIDEBAR_ICON_SIZE} />}
           contentType="tools"
           onContentTypeChange={onContentTypeChange}
         />
+        */}
       </TabsList>
 
       <div className="flex flex-col items-center space-y-4">

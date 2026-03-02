@@ -30,37 +30,37 @@ export const usePromptAndCommand = () => {
   } = useContext(ChatbotUIContext)
 
   const handleInputChange = (value: string) => {
-    const atTextRegex = /@([^ ]*)$/
-    const slashTextRegex = /\/([^ ]*)$/
-    const hashtagTextRegex = /#([^ ]*)$/
-    const toolTextRegex = /!([^ ]*)$/
-    const atMatch = value.match(atTextRegex)
-    const slashMatch = value.match(slashTextRegex)
-    const hashtagMatch = value.match(hashtagTextRegex)
-    const toolMatch = value.match(toolTextRegex)
+    // const atTextRegex = /@([^ ]*)$/
+    // const slashTextRegex = /\/([^ ]*)$/
+    // const hashtagTextRegex = /#([^ ]*)$/
+    // const toolTextRegex = /!([^ ]*)$/
+    // const atMatch = value.match(atTextRegex)
+    // const slashMatch = value.match(slashTextRegex)
+    // const hashtagMatch = value.match(hashtagTextRegex)
+    // const toolMatch = value.match(toolTextRegex)
 
-    if (atMatch) {
-      setIsAssistantPickerOpen(true)
-      setAtCommand(atMatch[1])
-    } else if (slashMatch) {
-      setIsPromptPickerOpen(true)
-      setSlashCommand(slashMatch[1])
-    } else if (hashtagMatch) {
-      setIsFilePickerOpen(true)
-      setHashtagCommand(hashtagMatch[1])
-    } else if (toolMatch) {
-      setIsToolPickerOpen(true)
-      setToolCommand(toolMatch[1])
-    } else {
-      setIsPromptPickerOpen(false)
-      setIsFilePickerOpen(false)
-      setIsToolPickerOpen(false)
-      setIsAssistantPickerOpen(false)
-      setSlashCommand("")
-      setHashtagCommand("")
-      setToolCommand("")
-      setAtCommand("")
-    }
+    // if (atMatch) {
+    //   setIsAssistantPickerOpen(true)
+    //   setAtCommand(atMatch[1])
+    // } else if (slashMatch) {
+    //   setIsPromptPickerOpen(true)
+    //   setSlashCommand(slashMatch[1])
+    // } else if (hashtagMatch) {
+    //   setIsFilePickerOpen(true)
+    //   setHashtagCommand(hashtagMatch[1])
+    // } else if (toolMatch) {
+    //   setIsToolPickerOpen(true)
+    //   setToolCommand(toolMatch[1])
+    // } else {
+    //   setIsPromptPickerOpen(false)
+    //   setIsFilePickerOpen(false)
+    //   setIsToolPickerOpen(false)
+    //   setIsAssistantPickerOpen(false)
+    //   setSlashCommand("")
+    //   setHashtagCommand("")
+    //   setToolCommand("")
+    //   setAtCommand("")
+    // }
 
     setUserInput(value)
   }
