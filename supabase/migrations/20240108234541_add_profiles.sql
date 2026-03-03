@@ -126,7 +126,7 @@ BEGIN
         TRUE,
         'Home',
         32768,
-        'llama3.1:latest',
+        'llama4:scout',
         'You are a friendly, helpful AI assistant.',
         0,
         'My home workspace.',

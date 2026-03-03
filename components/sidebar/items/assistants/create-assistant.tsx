@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label"
 import { ChatbotUIContext } from "@/context/context"
 import { ASSISTANT_DESCRIPTION_MAX, ASSISTANT_NAME_MAX } from "@/db/limits"
 import { Tables, TablesInsert } from "@/supabase/types"
+import { LLMID } from "@/types"
 import { FC, useContext, useEffect, useState } from "react"
 import { AssistantRetrievalSelect } from "./assistant-retrieval-select"
 import { AssistantToolSelect } from "./assistant-tool-select"
@@ -25,7 +26,7 @@ export const CreateAssistant: FC<CreateAssistantProps> = ({
   const [isTyping, setIsTyping] = useState(false)
   const [description, setDescription] = useState("")
   const [assistantChatSettings, setAssistantChatSettings] = useState({
-    model: selectedWorkspace?.default_model,
+    model: process.env.NEXT_PUBLIC_DEFAULT_MODEL as LLMID,
     prompt: selectedWorkspace?.default_prompt,
     temperature: selectedWorkspace?.default_temperature,
     contextLength: selectedWorkspace?.default_context_length,

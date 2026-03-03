@@ -93,7 +93,7 @@ BEGIN
         TRUE,
         'Home',
         32768,
-        'llama3.1:latest',   -- Updated default model
+        'llama4:scout',   -- Updated default model
         'You are a friendly, helpful AI assistant.',
         0.0,
         'My home workspace.',

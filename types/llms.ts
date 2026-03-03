@@ -9,7 +9,9 @@ export type LLMID =
   | PerplexityLLMID
   | CustomLLMID
 
-export type CustomLLMID = "llama3.1:latest" // Llama 3.1
+export type CustomLLMID = 
+  |"llama3.1:latest" // Llama 3.1
+  |"llama4:scout" // Llama 4 Scout
 
 // OpenAI Models (UPDATED 5/13/24)
 export type OpenAILLMID =

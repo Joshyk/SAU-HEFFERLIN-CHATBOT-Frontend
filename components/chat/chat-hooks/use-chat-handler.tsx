@@ -79,7 +79,6 @@ export const useChatHandler = () => {
 
   const handleNewChat = async () => {
     if (!selectedWorkspace) return
-
     setUserInput("")
     setChatMessages([])
     setSelectedChat(null)
@@ -157,22 +156,21 @@ export const useChatHandler = () => {
           | "local"
       })
     } else if (selectedWorkspace) {
-      // setChatSettings({
-      //   model: (selectedWorkspace.default_model ||
-      //     "gpt-4-1106-preview") as LLMID,
-      //   prompt:
-      //     selectedWorkspace.default_prompt ||
-      //     "You are a friendly, helpful AI assistant.",
-      //   temperature: selectedWorkspace.default_temperature || 0.5,
-      //   contextLength: selectedWorkspace.default_context_length || 4096,
-      //   includeProfileContext:
-      //     selectedWorkspace.include_profile_context || true,
-      //   includeWorkspaceInstructions:
-      //     selectedWorkspace.include_workspace_instructions || true,
-      //   embeddingsProvider:
-      //     (selectedWorkspace.embeddings_provider as "openai" | "local") ||
-      //     "openai"
-      // })
+      setChatSettings({
+        model: (selectedWorkspace.default_model ??
+          process.env.NEXT_PUBLIC_DEFAULT_MODEL!) as LLMID,
+        prompt:
+          selectedWorkspace.default_prompt ||
+          "You are a friendly, helpful AI assistant.",
+        temperature: selectedWorkspace.default_temperature,
+        contextLength: selectedWorkspace.default_context_length,
+        includeProfileContext: selectedWorkspace.include_profile_context,
+        includeWorkspaceInstructions:
+          selectedWorkspace.include_workspace_instructions,
+        embeddingsProvider: selectedWorkspace.embeddings_provider as
+          | "openai"
+          | "local"
+      })
     }
 
     return router.push(`/${selectedWorkspace.id}/chat`)
