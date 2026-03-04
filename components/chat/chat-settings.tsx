@@ -42,7 +42,7 @@ export const ChatSettings: FC<ChatSettingsProps> = ({}) => {
       contextLength: Math.min(
         chatSettings.contextLength,
         CHAT_SETTING_LIMITS[chatSettings.model]?.MAX_CONTEXT_LENGTH ||
-          Number(process.env.NEXT_PUBLIC_DEFAULT_CONTEXT_LENGTH!)
+          Number(process.env.NEXT_PUBLIC_MAX_CONTEXT_LENGTH!)
       )
     })
   }, [chatSettings?.model])
