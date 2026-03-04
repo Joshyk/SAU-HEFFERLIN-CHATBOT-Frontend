@@ -125,7 +125,7 @@ BEGIN
         NEW.id,
         TRUE,
         'Home',
-        32768,
+        16384,
         'llama4:scout',
         'You are a friendly, helpful AI assistant.',
         0,
