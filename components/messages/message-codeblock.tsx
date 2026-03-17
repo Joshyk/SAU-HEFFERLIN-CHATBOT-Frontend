@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button"
 import { useCopyToClipboard } from "@/lib/hooks/use-copy-to-clipboard"
 import { IconCheck, IconCopy, IconDownload } from "@tabler/icons-react"
-import { FC, memo } from "react"
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
+import { FC, ComponentType, memo } from "react"
+import { Prism as SyntaxHighlighterBase } from "react-syntax-highlighter"
 import { oneDark } from "react-syntax-highlighter/dist/cjs/styles/prism"
+const SyntaxHighlighter: ComponentType<any> = SyntaxHighlighterBase as any
 
 interface MessageCodeBlockProps {
   language: string
@@ -62,7 +63,7 @@ export const MessageCodeBlock: FC<MessageCodeBlockProps> = memo(
         3,
         true
       )}${fileExtension}`
-      const fileName = window.prompt("Enter file name" || "", suggestedFileName)
+      const fileName = window.prompt("Enter file name", suggestedFileName)
 
       if (!fileName) {
         return
