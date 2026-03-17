@@ -1777,9 +1777,6 @@ export type Database = {
         Args: { p_delimiter: string; p_key: string; p_prefix: string }
         Returns: string
       }
-      get_level: { Args: { name: string }; Returns: number }
-      get_prefix: { Args: { name: string }; Returns: string }
-      get_prefixes: { Args: { name: string }; Returns: string[] }
       get_size_by_bucket: {
         Args: never
         Returns: {
@@ -1857,26 +1854,6 @@ export type Database = {
           created_at: string
           id: string
           key: string
-          last_accessed_at: string
-          metadata: Json
-          name: string
-          updated_at: string
-        }[]
-      }
-      search_legacy_v1: {
-        Args: {
-          bucketname: string
-          levels?: number
-          limits?: number
-          offsets?: number
-          prefix: string
-          search?: string
-          sortcolumn?: string
-          sortorder?: string
-        }
-        Returns: {
-          created_at: string
-          id: string
           last_accessed_at: string
           metadata: Json
           name: string
