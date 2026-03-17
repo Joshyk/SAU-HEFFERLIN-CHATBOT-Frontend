@@ -4173,15 +4173,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@supabase/ssr@npm:^0.0.10":
-  version: 0.0.10
-  resolution: "@supabase/ssr@npm:0.0.10"
+"@supabase/ssr@npm:^0.9.0":
+  version: 0.9.0
+  resolution: "@supabase/ssr@npm:0.9.0"
   dependencies:
-    cookie: "npm:^0.5.0"
-    ramda: "npm:^0.29.0"
+    cookie: "npm:^1.0.2"
   peerDependencies:
-    "@supabase/supabase-js": ^2.33.1
-  checksum: 10c0/86c462ce4f7cd868755533d9a719ad639a9ec708fc811d1a9ebb1df39a5f4bc0f8160d9134fb98763e866e9df8fdec8a3e5edf144daf05b1f9e8f8acb5ba8e69
+    "@supabase/supabase-js": ^2.97.0
+  checksum: 10c0/72ae27d9f873c0fd69109126e9bbf1d6e994c5c3706041fca4daf1f6aa551402b3064c30178ad4fa4035156cd76cf537cddbc7c15000574365aa94651dbc3ec5
   languageName: node
   linkType: hard
 
@@ -6206,7 +6205,7 @@ __metadata:
     "@radix-ui/react-toggle": "npm:^1.0.3"
     "@radix-ui/react-toggle-group": "npm:^1.0.4"
     "@radix-ui/react-tooltip": "npm:^1.0.7"
-    "@supabase/ssr": "npm:^0.0.10"
+    "@supabase/ssr": "npm:^0.9.0"
     "@supabase/supabase-js": "npm:^2.38.4"
     "@tabler/icons-react": "npm:^2.40.0"
     "@tailwindcss/typography": "npm:^0.5.10"
@@ -6247,7 +6246,7 @@ __metadata:
     next-i18n-router: "npm:^5.2.0"
     next-pwa: "npm:5.6.0"
     next-themes: "npm:^0.2.1"
-    openai: "npm:^4.23.0"
+    openai: "npm:4.28.4"
     pdf-parse: "npm:^1.1.1"
     postcss: "npm:^8.4.31"
     prettier: "npm:^3.1.0"
@@ -6520,10 +6519,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cookie@npm:^0.5.0":
-  version: 0.5.0
-  resolution: "cookie@npm:0.5.0"
-  checksum: 10c0/c01ca3ef8d7b8187bae434434582288681273b5a9ed27521d4d7f9f7928fe0c920df0decd9f9d3bbd2d14ac432b8c8cf42b98b3bdd5bfe0e6edddeebebe8b61d
+"cookie@npm:^1.0.2":
+  version: 1.1.1
+  resolution: "cookie@npm:1.1.1"
+  checksum: 10c0/79c4ddc0fcad9c4f045f826f42edf54bcc921a29586a4558b0898277fa89fb47be95bc384c2253f493af7b29500c830da28341274527328f18eba9f58afa112c
   languageName: node
   linkType: hard
 
@@ -11890,7 +11889,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openai@npm:^4.23.0, openai@npm:^4.41.1":
+"openai@npm:4.28.4":
+  version: 4.28.4
+  resolution: "openai@npm:4.28.4"
+  dependencies:
+    "@types/node": "npm:^18.11.18"
+    "@types/node-fetch": "npm:^2.6.4"
+    abort-controller: "npm:^3.0.0"
+    agentkeepalive: "npm:^4.2.1"
+    digest-fetch: "npm:^1.3.0"
+    form-data-encoder: "npm:1.7.2"
+    formdata-node: "npm:^4.3.2"
+    node-fetch: "npm:^2.6.7"
+    web-streams-polyfill: "npm:^3.2.1"
+  bin:
+    openai: bin/cli
+  checksum: 10c0/be0cf2758abf39c1d4f4db30034da312c1a7651cc3b09b8ca9a67d5bc3dd74861612783ac775660c97af91f7afdd1dff34b0e359b41a8aec6afd8049bd578fc8
+  languageName: node
+  linkType: hard
+
+"openai@npm:^4.41.1":
   version: 4.104.0
   resolution: "openai@npm:4.104.0"
   dependencies:
@@ -12591,13 +12609,6 @@ __metadata:
   version: 1.2.3
   resolution: "queue-microtask@npm:1.2.3"
   checksum: 10c0/900a93d3cdae3acd7d16f642c29a642aea32c2026446151f0778c62ac089d4b8e6c986811076e1ae180a694cedf077d453a11b58ff0a865629a4f82ab558e102
-  languageName: node
-  linkType: hard
-
-"ramda@npm:^0.29.0":
-  version: 0.29.1
-  resolution: "ramda@npm:0.29.1"
-  checksum: 10c0/5de53a07400959c1a704c366ec52b1b8cd9a444dc1f9cdf17d607e0b9eeaa38cbaea309d43e59dbd7f36731ba977a64d40092555c0e7c2d4a41e8e922239c0ba
   languageName: node
   linkType: hard
 
