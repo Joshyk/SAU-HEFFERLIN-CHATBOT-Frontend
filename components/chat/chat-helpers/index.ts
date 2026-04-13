@@ -155,7 +155,8 @@ export const handleLocalChat = async (
   setFirstTokenReceived: React.Dispatch<React.SetStateAction<boolean>>,
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
   setToolInUse: React.Dispatch<React.SetStateAction<string>>,
-  chatID: string
+  chatID: string,
+  collectionId: string | null = null
 ) => {
   const formattedMessages = await buildFinalMessages(payload, profile, [])
 
@@ -169,7 +170,8 @@ export const handleLocalChat = async (
         temperature: payload.chatSettings.temperature,
         contextLength: payload.chatSettings.contextLength,
         username: profile.username,
-        chatID
+        chatID,
+        collectionId
       }
     },
     false,
@@ -359,12 +361,14 @@ export const handleCreateChat = async (
   newMessageFiles: ChatFile[],
   setSelectedChat: React.Dispatch<React.SetStateAction<Tables<"chats"> | null>>,
   setChats: React.Dispatch<React.SetStateAction<Tables<"chats">[]>>,
-  setChatFiles: React.Dispatch<React.SetStateAction<ChatFile[]>>
+  setChatFiles: React.Dispatch<React.SetStateAction<ChatFile[]>>,
+  collectionId: string | null = null
 ) => {
   const createdChat = await createChat({
     user_id: profile.user_id,
     workspace_id: selectedWorkspace.id,
     assistant_id: selectedAssistant?.id || null,
+    collection_id: collectionId,
     context_length: chatSettings.contextLength,
     include_profile_context: chatSettings.includeProfileContext,
     include_workspace_instructions: chatSettings.includeWorkspaceInstructions,

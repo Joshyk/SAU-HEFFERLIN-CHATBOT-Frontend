@@ -17,6 +17,7 @@ import { useScroll } from "./chat-hooks/use-scroll"
 import { ChatInput } from "./chat-input"
 import { ChatMessages } from "./chat-messages"
 import { ChatScrollButtons } from "./chat-scroll-buttons"
+import { CollectionSelect } from "./collection-select"
 import { ChatSecondaryButtons } from "./chat-secondary-buttons"
 
 interface ChatUIProps {}
@@ -34,6 +35,7 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
     setChatImages,
     assistants,
     setSelectedAssistant,
+    setSelectedCollection,
     setChatFileItems,
     setChatFiles,
     setShowFilesDisplay,
@@ -169,6 +171,26 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
       }
     }
 
+    if (chat.collection_id) {
+      try {
+        const res = await fetch("/api/datasets", { cache: "no-store" })
+        if (res.ok) {
+          const payload = await res.json()
+          const datasets = Array.isArray(payload.datasets)
+            ? payload.datasets
+            : []
+          const dataset = datasets.find(
+            (d: { id: string }) => d.id === chat.collection_id
+          )
+          if (dataset) {
+            setSelectedCollection({ id: dataset.id, name: dataset.name })
+          }
+        }
+      } catch {
+        // ignore - collection display is non-critical
+      }
+    }
+
     setSelectedChat(chat)
     setChatSettings({
       model: chat.model as LLMID,
@@ -202,8 +224,11 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
       </div>
 
       <div className="bg-secondary flex max-h-[50px] min-h-[50px] w-full items-center justify-center border-b-2 font-bold">
-        <div className="max-w-[200px] truncate sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px] xl:max-w-[700px]">
-          {selectedChat?.name || "Chat"}
+        <div className="flex items-center space-x-3 max-w-[200px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px] xl:max-w-[700px]">
+          <span className="truncate">{selectedChat?.name || "Chat"}</span>
+          {selectedChat?.collection_id && (
+            <CollectionSelect />
+          )}
         </div>
       </div>
 

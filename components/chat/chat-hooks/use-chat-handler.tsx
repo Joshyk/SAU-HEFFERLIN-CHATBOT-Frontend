@@ -66,7 +66,9 @@ export const useChatHandler = () => {
     models,
     isPromptPickerOpen,
     isFilePickerOpen,
-    isToolPickerOpen
+    isToolPickerOpen,
+    selectedCollection,
+    setSelectedCollection
   } = useContext(ChatbotUIContext)
 
   const chatInputRef = useRef<HTMLTextAreaElement>(null)
@@ -82,6 +84,7 @@ export const useChatHandler = () => {
     setUserInput("")
     setChatMessages([])
     setSelectedChat(null)
+    setSelectedCollection(null)
     setChatFileItems([])
 
     setIsGenerating(false)
@@ -238,7 +241,8 @@ export const useChatHandler = () => {
           newMessageFiles,
           setSelectedChat,
           setChats,
-          setChatFiles
+          setChatFiles,
+          selectedCollection?.id || null
         )
       }
 
@@ -332,7 +336,8 @@ export const useChatHandler = () => {
             setFirstTokenReceived,
             setChatMessages,
             setToolInUse,
-            currentChat.id
+            currentChat.id,
+            currentChat.collection_id
           )
         } else {
           generatedText = await handleHostedChat(
@@ -362,7 +367,8 @@ export const useChatHandler = () => {
           newMessageFiles,
           setSelectedChat,
           setChats,
-          setChatFiles
+          setChatFiles,
+          selectedCollection?.id || null
         )
       } else {
         const updatedChat = await updateChat(currentChat.id, {

@@ -297,6 +297,7 @@ export type Database = {
       chats: {
         Row: {
           assistant_id: string | null
+          collection_id: string | null
           context_length: number
           created_at: string
           embeddings_provider: string
@@ -315,6 +316,7 @@ export type Database = {
         }
         Insert: {
           assistant_id?: string | null
+          collection_id?: string | null
           context_length: number
           created_at?: string
           embeddings_provider: string
@@ -333,6 +335,7 @@ export type Database = {
         }
         Update: {
           assistant_id?: string | null
+          collection_id?: string | null
           context_length?: number
           created_at?: string
           embeddings_provider?: string
@@ -355,6 +358,13 @@ export type Database = {
             columns: ["assistant_id"]
             isOneToOne: false
             referencedRelation: "assistants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chats_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
             referencedColumns: ["id"]
           },
           {

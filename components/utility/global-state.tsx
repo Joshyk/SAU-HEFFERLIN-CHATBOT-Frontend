@@ -73,6 +73,12 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
   const [assistantImages, setAssistantImages] = useState<AssistantImage[]>([])
   const [openaiAssistants, setOpenaiAssistants] = useState<any[]>([])
 
+  // COLLECTION STORE
+  const [selectedCollection, setSelectedCollection] = useState<{
+    id: string
+    name: string
+  } | null>(null)
+
   // PASSIVE CHAT STORE
   const [userInput, setUserInput] = useState<string>("")
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
@@ -253,6 +259,10 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
         setAssistantImages,
         openaiAssistants,
         setOpenaiAssistants,
+
+        // COLLECTION STORE
+        selectedCollection,
+        setSelectedCollection,
 
         // PASSIVE CHAT STORE
         userInput,

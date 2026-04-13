@@ -67,6 +67,12 @@ interface ChatbotUIContext {
   openaiAssistants: any[]
   setOpenaiAssistants: Dispatch<SetStateAction<any[]>>
 
+  // COLLECTION STORE
+  selectedCollection: { id: string; name: string } | null
+  setSelectedCollection: Dispatch<
+    SetStateAction<{ id: string; name: string } | null>
+  >
+
   // PASSIVE CHAT STORE
   userInput: string
   setUserInput: Dispatch<SetStateAction<string>>
@@ -192,6 +198,10 @@ export const ChatbotUIContext = createContext<ChatbotUIContext>({
   setAssistantImages: () => {},
   openaiAssistants: [],
   setOpenaiAssistants: () => {},
+
+  // COLLECTION STORE
+  selectedCollection: null,
+  setSelectedCollection: () => {},
 
   // PASSIVE CHAT STORE
   userInput: "",
