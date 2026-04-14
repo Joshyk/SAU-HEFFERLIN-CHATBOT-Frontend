@@ -7,9 +7,11 @@ import { getCollectionFilesByCollectionId } from "@/db/collection-files"
 import { deleteMessagesIncludingAndAfter } from "@/db/messages"
 import { buildFinalMessages } from "@/lib/build-prompt"
 import { Tables } from "@/supabase/types"
+import { DatasetsResponse } from "@/types/dataset"
 import { ChatMessage, ChatPayload, LLMID, ModelProvider } from "@/types"
 import { useRouter } from "next/navigation"
 import { useContext, useEffect, useRef } from "react"
+import { toast } from "sonner"
 import { LLM_LIST } from "../../../lib/models/llm/llm-list"
 import {
   createTempMessages,
@@ -189,6 +191,55 @@ export const useChatHandler = () => {
     }
   }
 
+  const resolveSelectedCollection = async () => {
+    if (selectedCollection) {
+      return selectedCollection
+    }
+
+    const response = await fetch("/api/datasets", {
+      cache: "no-store"
+    })
+
+    const payload = (await response.json()) as Partial<DatasetsResponse> & {
+      error?: string
+    }
+
+    if (!response.ok) {
+      throw new Error(payload.error || "Failed to load datasets.")
+    }
+
+    const datasets = Array.isArray(payload.datasets) ? payload.datasets : []
+    const defaultDatasetId =
+      typeof payload.defaultDatasetId === "string"
+        ? payload.defaultDatasetId
+        : null
+
+    if (!defaultDatasetId) {
+      throw new Error("No dataset is configured for this chat.")
+    }
+
+    const defaultDataset = datasets.find(dataset => dataset.id === defaultDatasetId)
+    const defaultCollectionId =
+      typeof payload.defaultCollectionId === "string"
+        ? payload.defaultCollectionId
+        : defaultDataset?.collectionId || defaultDatasetId
+    const defaultFaithId =
+      typeof payload.defaultFaithId === "string"
+        ? payload.defaultFaithId
+        : defaultDataset?.faithId
+
+    const resolvedCollection = {
+      id: defaultDatasetId,
+      name: defaultDataset?.name || defaultDatasetId,
+      collectionId: defaultCollectionId,
+      faithId: defaultFaithId
+    }
+
+    setSelectedCollection(resolvedCollection)
+
+    return resolvedCollection
+  }
+
   const handleSendMessage = async (
     messageContent: string,
     chatMessages: ChatMessage[],
@@ -229,6 +280,10 @@ export const useChatHandler = () => {
       )
 
       let currentChat = selectedChat ? { ...selectedChat } : null
+      const effectiveCollection =
+        modelData?.provider === "ollama"
+          ? await resolveSelectedCollection()
+          : selectedCollection
 
       // Create chat FIRST if it doesn't exist
       if (!currentChat) {
@@ -242,7 +297,7 @@ export const useChatHandler = () => {
           setSelectedChat,
           setChats,
           setChatFiles,
-          selectedCollection?.id || null
+          null
         )
       }
 
@@ -337,7 +392,7 @@ export const useChatHandler = () => {
             setChatMessages,
             setToolInUse,
             currentChat.id,
-            currentChat.collection_id
+            effectiveCollection?.collectionId || effectiveCollection?.faithId || null
           )
         } else {
           generatedText = await handleHostedChat(
@@ -368,7 +423,7 @@ export const useChatHandler = () => {
           setSelectedChat,
           setChats,
           setChatFiles,
-          selectedCollection?.id || null
+          null
         )
       } else {
         const updatedChat = await updateChat(currentChat.id, {
@@ -403,6 +458,12 @@ export const useChatHandler = () => {
       setIsGenerating(false)
       setFirstTokenReceived(false)
     } catch (error) {
+      if (!(error instanceof DOMException && error.name === "AbortError")) {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to send message."
+        )
+      }
+
       setIsGenerating(false)
       setFirstTokenReceived(false)
       setUserInput(startingInput)

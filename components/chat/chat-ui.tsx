@@ -17,7 +17,6 @@ import { useScroll } from "./chat-hooks/use-scroll"
 import { ChatInput } from "./chat-input"
 import { ChatMessages } from "./chat-messages"
 import { ChatScrollButtons } from "./chat-scroll-buttons"
-import { CollectionSelect } from "./collection-select"
 import { ChatSecondaryButtons } from "./chat-secondary-buttons"
 
 interface ChatUIProps {}
@@ -180,10 +179,16 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
             ? payload.datasets
             : []
           const dataset = datasets.find(
-            (d: { id: string }) => d.id === chat.collection_id
+            (d: { id: string; name: string; collectionId?: string; faithId?: string }) =>
+              d.id === chat.collection_id || d.collectionId === chat.collection_id
           )
           if (dataset) {
-            setSelectedCollection({ id: dataset.id, name: dataset.name })
+            setSelectedCollection({
+              id: dataset.id,
+              name: dataset.name,
+              collectionId: dataset.collectionId,
+              faithId: dataset.faithId
+            })
           }
         }
       } catch {
@@ -224,11 +229,8 @@ export const ChatUI: FC<ChatUIProps> = ({}) => {
       </div>
 
       <div className="bg-secondary flex max-h-[50px] min-h-[50px] w-full items-center justify-center border-b-2 font-bold">
-        <div className="flex items-center space-x-3 max-w-[200px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px] xl:max-w-[700px]">
+        <div className="flex max-w-[200px] items-center space-x-3 sm:max-w-[400px] md:max-w-[500px] lg:max-w-[600px] xl:max-w-[700px]">
           <span className="truncate">{selectedChat?.name || "Chat"}</span>
-          {selectedChat?.collection_id && (
-            <CollectionSelect />
-          )}
         </div>
       </div>
 

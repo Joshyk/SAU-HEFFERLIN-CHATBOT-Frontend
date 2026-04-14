@@ -20,7 +20,6 @@ import {
   MessageImage
 } from "@/types"
 import React from "react"
-import { toast } from "sonner"
 import { v4 as uuidv4 } from "uuid"
 
 export const validateChatSettings = (
@@ -270,18 +269,24 @@ export const fetchChatResponse = async (
   })
 
   if (!response.ok) {
+    let errorMessage = "Failed to generate a response."
+
     if (response.status === 404 && !isHosted) {
-      toast.error(
+      errorMessage =
         "Model not found. Make sure you have it downloaded via Ollama."
-      )
     }
 
-    const errorData = await response.json()
-
-    toast.error(errorData.message)
+    try {
+      const errorData = await response.json()
+      errorMessage = errorData.message || errorData.error || errorMessage
+    } catch {
+      // Fall back to the default error message when the response is not JSON.
+    }
 
     setIsGenerating(false)
     setChatMessages(prevMessages => prevMessages.slice(0, -2))
+
+    throw new Error(errorMessage)
   }
 
   return response

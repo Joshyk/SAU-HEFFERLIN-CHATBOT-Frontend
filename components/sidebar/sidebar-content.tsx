@@ -1,6 +1,7 @@
 import { Tables } from "@/supabase/types"
 import { ContentType, DataListType } from "@/types"
 import { FC, useState } from "react"
+import { CollectionSelect } from "../chat/collection-select"
 import { DatasetList } from "./items/collections/dataset-list"
 import { SidebarCreateButtons } from "./sidebar-create-buttons"
 import { SidebarDataList } from "./sidebar-data-list"
@@ -40,6 +41,16 @@ export const SidebarContent: FC<SidebarContentProps> = ({
           setSearchTerm={setSearchTerm}
         />
       </div>
+
+      {contentType === "collections" && (
+        <div className="mt-4 space-y-2 px-2">
+          <div className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
+            Selected Dataset
+          </div>
+
+          <CollectionSelect />
+        </div>
+      )}
 
       {contentType === "collections" && <DatasetList searchTerm={searchTerm} />}
 

@@ -68,9 +68,13 @@ interface ChatbotUIContext {
   setOpenaiAssistants: Dispatch<SetStateAction<any[]>>
 
   // COLLECTION STORE
-  selectedCollection: { id: string; name: string } | null
+  selectedCollection:
+    | { id: string; name: string; collectionId?: string; faithId?: string }
+    | null
   setSelectedCollection: Dispatch<
-    SetStateAction<{ id: string; name: string } | null>
+    SetStateAction<
+      { id: string; name: string; collectionId?: string; faithId?: string } | null
+    >
   >
 
   // PASSIVE CHAT STORE

@@ -91,6 +91,8 @@ const loadLocalDatasets = async (): Promise<DatasetsResponse> => {
             id,
             name: humanizeDatasetName(ragName),
             ragName,
+            collectionId: ragName,
+            faithId: ragName,
             configPath: path.relative(process.cwd(), configPath),
             filename
           } satisfies DatasetSummary
@@ -99,7 +101,9 @@ const loadLocalDatasets = async (): Promise<DatasetsResponse> => {
 
       return {
         datasets,
-        defaultDatasetId: datasets[0]?.id ?? null
+        defaultDatasetId: datasets[0]?.id ?? null,
+        defaultCollectionId: datasets[0]?.collectionId ?? null,
+        defaultFaithId: datasets[0]?.faithId ?? null
       }
     } catch {
       // Try the next candidate directory.
@@ -127,7 +131,13 @@ const loadProxyDatasets = async (): Promise<DatasetsResponse> => {
   return {
     datasets: Array.isArray(payload.datasets) ? payload.datasets : [],
     defaultDatasetId:
-      typeof payload.defaultDatasetId === "string" ? payload.defaultDatasetId : null
+      typeof payload.defaultDatasetId === "string" ? payload.defaultDatasetId : null,
+    defaultCollectionId:
+      typeof payload.defaultCollectionId === "string"
+        ? payload.defaultCollectionId
+        : null,
+    defaultFaithId:
+      typeof payload.defaultFaithId === "string" ? payload.defaultFaithId : null
   }
 }
 

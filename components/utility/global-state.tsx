@@ -77,6 +77,8 @@ export const GlobalState: FC<GlobalStateProps> = ({ children }) => {
   const [selectedCollection, setSelectedCollection] = useState<{
     id: string
     name: string
+    collectionId?: string
+    faithId?: string
   } | null>(null)
 
   // PASSIVE CHAT STORE

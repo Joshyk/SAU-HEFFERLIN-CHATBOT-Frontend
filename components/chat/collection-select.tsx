@@ -50,7 +50,9 @@ export const CollectionSelect: FC<CollectionSelectProps> = () => {
             if (def) {
               setSelectedCollection({
                 id: def.id,
-                name: def.name
+                name: def.name,
+                collectionId: def.collectionId,
+                faithId: def.faithId
               })
             }
           }
@@ -66,7 +68,7 @@ export const CollectionSelect: FC<CollectionSelectProps> = () => {
 
     loadDatasets()
     return () => controller.abort()
-  }, [])
+  }, [selectedCollection, setSelectedCollection])
 
   return (
     <div className="flex items-center space-x-2">
@@ -81,11 +83,16 @@ export const CollectionSelect: FC<CollectionSelectProps> = () => {
           }
           const dataset = datasets.find(d => d.id === value)
           if (dataset) {
-            setSelectedCollection({ id: dataset.id, name: dataset.name })
+            setSelectedCollection({
+              id: dataset.id,
+              name: dataset.name,
+              collectionId: dataset.collectionId,
+              faithId: dataset.faithId
+            })
           }
         }}
       >
-        <SelectTrigger className="w-[200px]">
+        <SelectTrigger className="w-full">
           <SelectValue
             placeholder={isLoading ? "Loading..." : "Select dataset"}
           />
