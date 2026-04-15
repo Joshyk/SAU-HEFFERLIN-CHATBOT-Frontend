@@ -7,9 +7,12 @@ import { WithTooltip } from "../ui/with-tooltip"
 interface ChatSecondaryButtonsProps {}
 
 export const ChatSecondaryButtons: FC<ChatSecondaryButtonsProps> = ({}) => {
-  const { selectedChat } = useContext(ChatbotUIContext)
+  const { selectedChat, selectedCollection } = useContext(ChatbotUIContext)
 
   const { handleNewChat } = useChatHandler()
+
+  const datasetLabel =
+    selectedCollection?.name || selectedChat?.collection_id || "None"
 
   return (
     <>
@@ -24,6 +27,7 @@ export const ChatSecondaryButtons: FC<ChatSecondaryButtonsProps> = ({}) => {
                 <div className="mx-auto mt-2 max-w-xs space-y-2 sm:max-w-sm md:max-w-md lg:max-w-lg">
                   <div>Model: {selectedChat.model}</div>
                   <div>Prompt: {selectedChat.prompt}</div>
+                  <div>Dataset: {datasetLabel}</div>
 
                   <div>Temperature: {selectedChat.temperature}</div>
                   <div>Context Length: {selectedChat.context_length}</div>

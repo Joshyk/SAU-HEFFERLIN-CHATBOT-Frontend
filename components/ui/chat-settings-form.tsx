@@ -1,5 +1,6 @@
 "use client"
 
+import { CollectionSelect } from "@/components/chat/collection-select"
 import { ChatbotUIContext } from "@/context/context"
 import { CHAT_SETTING_LIMITS } from "@/lib/chat-setting-limits"
 import { ChatSettings } from "@/types"
@@ -25,15 +26,17 @@ interface ChatSettingsFormProps {
   onChangeChatSettings: (value: ChatSettings) => void
   useAdvancedDropdown?: boolean
   showTooltip?: boolean
+  showDatasetSelect?: boolean
 }
 
 export const ChatSettingsForm: FC<ChatSettingsFormProps> = ({
   chatSettings,
   onChangeChatSettings,
   useAdvancedDropdown = true,
-  showTooltip = true
+  showTooltip = true,
+  showDatasetSelect = false
 }) => {
-  const { profile, models } = useContext(ChatbotUIContext)
+  const { profile, selectedChat } = useContext(ChatbotUIContext)
 
   if (!profile) return null
 
@@ -64,6 +67,14 @@ export const ChatSettingsForm: FC<ChatSettingsFormProps> = ({
           maxRows={6}
         />
       </div>
+
+      {showDatasetSelect && !selectedChat && (
+        <div className="space-y-1">
+          <Label>Dataset</Label>
+
+          <CollectionSelect />
+        </div>
+      )}
 
       {useAdvancedDropdown ? (
         <AdvancedSettings>

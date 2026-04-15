@@ -88,6 +88,7 @@ export const ChatSettings: FC<ChatSettingsProps> = ({}) => {
         <ChatSettingsForm
           chatSettings={chatSettings}
           onChangeChatSettings={setChatSettings}
+          showDatasetSelect
         />
       </PopoverContent>
     </Popover>
