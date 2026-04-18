@@ -292,6 +292,99 @@ export const fetchChatResponse = async (
   return response
 }
 
+type CitationAnchor = {
+  position: number
+  sourceId: number
+}
+
+type LocalStreamPayload = {
+  event?: {
+    kind?: unknown
+    content?: unknown
+    source_id?: unknown
+  }
+  kind?: unknown
+  content?: unknown
+  source_id?: unknown
+  message?: {
+    content?: unknown
+  }
+}
+
+const extractCompletedNdjsonLines = (input: string) => {
+  const lines: string[] = []
+  let remainder = input
+
+  while (true) {
+    const newlineIndex = remainder.indexOf("\n")
+    if (newlineIndex < 0) {
+      return { lines, remainder }
+    }
+
+    const line = remainder.slice(0, newlineIndex).trim()
+    remainder = remainder.slice(newlineIndex + 1)
+
+    if (line) {
+      lines.push(line)
+    }
+  }
+}
+
+const renderStreamedAssistantMarkdown = (
+  answerBody: string,
+  citationAnchors: CitationAnchor[],
+  sourcesSection: string
+) => {
+  let rendered = ""
+  let cursor = 0
+  let nextCitationNumber = 1
+  const citationNumberBySourceId = new Map<number, number>()
+
+  for (const anchor of citationAnchors) {
+    const safePosition = Math.max(cursor, Math.min(answerBody.length, anchor.position))
+    rendered += answerBody.slice(cursor, safePosition)
+
+    let citationNumber = citationNumberBySourceId.get(anchor.sourceId)
+    if (!citationNumber) {
+      citationNumber = nextCitationNumber
+      nextCitationNumber += 1
+      citationNumberBySourceId.set(anchor.sourceId, citationNumber)
+    }
+
+    rendered += `[${citationNumber}]`
+    cursor = safePosition
+  }
+
+  rendered += answerBody.slice(cursor)
+  rendered += sourcesSection
+
+  return rendered
+}
+
+const updateStreamingAssistantMessage = (
+  lastChatMessage: ChatMessage,
+  renderedContent: string,
+  setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>
+) => {
+  setChatMessages(prev =>
+    prev.map(chatMessage => {
+      if (chatMessage.message.id === lastChatMessage.message.id) {
+        const updatedChatMessage: ChatMessage = {
+          message: {
+            ...chatMessage.message,
+            content: renderedContent
+          },
+          fileItems: chatMessage.fileItems
+        }
+
+        return updatedChatMessage
+      }
+
+      return chatMessage
+    })
+  )
+}
+
 export const processResponse = async (
   response: Response,
   lastChatMessage: ChatMessage,
@@ -301,55 +394,110 @@ export const processResponse = async (
   setChatMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>,
   setToolInUse: React.Dispatch<React.SetStateAction<string>>
 ) => {
+  let answerBody = ""
+  let sourcesSection = ""
   let fullText = ""
-  let contentToAdd = ""
+  let ndjsonBuffer = ""
+  const citationAnchors: CitationAnchor[] = []
+
+  const syncRenderedMessage = () => {
+    fullText = renderStreamedAssistantMarkdown(
+      answerBody,
+      citationAnchors,
+      sourcesSection
+    )
+    updateStreamingAssistantMessage(lastChatMessage, fullText, setChatMessages)
+  }
+
+  const applyLocalStreamLine = (line: string) => {
+    const payload = JSON.parse(line) as LocalStreamPayload
+    const event = payload.event
+
+    if (typeof payload.message?.content === "string") {
+      answerBody += payload.message.content
+      return true
+    }
+
+    if (event?.kind === "citation_anchor" && Number.isInteger(event.source_id)) {
+      citationAnchors.push({
+        sourceId: Number(event.source_id),
+        position: answerBody.length
+      })
+      return true
+    }
+
+    if (event?.kind === "sources_chunk" && typeof event.content === "string") {
+      sourcesSection += event.content
+      return true
+    }
+
+    if (payload.kind === "answer_text_chunk" && typeof payload.content === "string") {
+      answerBody += payload.content
+      return true
+    }
+
+    if (payload.kind === "citation_anchor" && Number.isInteger(payload.source_id)) {
+      citationAnchors.push({
+        sourceId: Number(payload.source_id),
+        position: answerBody.length
+      })
+      return true
+    }
+
+    return false
+  }
 
   if (response.body) {
     await consumeReadableStream(
       response.body,
       chunk => {
-        setFirstTokenReceived(true)
-        setToolInUse("none")
+        if (isHosted) {
+          if (!chunk) return
 
-        try {
-          contentToAdd = isHosted
-            ? chunk
-            : // Ollama's streaming endpoint returns new-line separated JSON
-              // objects. A chunk may have more than one of these objects, so we
-              // need to split the chunk by new-lines and handle each one
-              // separately.
-              chunk
-                .trimEnd()
-                .split("\n")
-                .reduce(
-                  (acc, line) => acc + JSON.parse(line).message.content,
-                  ""
-                )
-          fullText += contentToAdd
-        } catch (error) {
-          console.error("Error parsing JSON:", error)
+          setFirstTokenReceived(true)
+          setToolInUse("none")
+          answerBody += chunk
+          syncRenderedMessage()
+          return
         }
 
-        setChatMessages(prev =>
-          prev.map(chatMessage => {
-            if (chatMessage.message.id === lastChatMessage.message.id) {
-              const updatedChatMessage: ChatMessage = {
-                message: {
-                  ...chatMessage.message,
-                  content: fullText
-                },
-                fileItems: chatMessage.fileItems
-              }
+        ndjsonBuffer += chunk
+        const { lines, remainder } = extractCompletedNdjsonLines(ndjsonBuffer)
+        ndjsonBuffer = remainder
 
-              return updatedChatMessage
-            }
+        if (lines.length === 0) return
 
-            return chatMessage
-          })
-        )
+        let processedAnyLine = false
+
+        for (const line of lines) {
+          try {
+            processedAnyLine = applyLocalStreamLine(line) || processedAnyLine
+          } catch (error) {
+            console.error("Error parsing NDJSON line:", error)
+          }
+        }
+
+        if (!processedAnyLine) return
+
+        setFirstTokenReceived(true)
+        setToolInUse("none")
+        syncRenderedMessage()
       },
       controller.signal
     )
+
+    if (!isHosted && ndjsonBuffer.trim()) {
+      try {
+        const processedRemainder = applyLocalStreamLine(ndjsonBuffer.trim())
+        if (processedRemainder) {
+          setFirstTokenReceived(true)
+          setToolInUse("none")
+          syncRenderedMessage()
+        }
+      } catch (error) {
+        console.error("Error parsing trailing NDJSON line:", error)
+      }
+    }
 
     return fullText
   } else {
