@@ -25,6 +25,7 @@ import { MessageActions } from "./message-actions"
 import { MessageMarkdown } from "./message-markdown"
 
 const ICON_SIZE = 32
+const ASSISTANT_NAME = process.env.NEXT_PUBLIC_ASSISTANT_NAME || "AI"
 
 interface MessageProps {
   message: Tables<"messages">
@@ -140,9 +141,7 @@ export const Message: FC<MessageProps> = ({
     ...availableOpenRouterModels
   ].find(llm => llm.modelId === message.model) as LLM
 
-  const messageAssistantImage = assistantImages.find(
-    image => image.assistantId === message.assistant_id
-  )?.base64
+  const messageAssistantImage = "/logo_mini_black.svg"
 
   const selectedAssistantImage = assistantImages.find(
     image => image.path === selectedAssistant?.image_path
@@ -255,13 +254,7 @@ export const Message: FC<MessageProps> = ({
 
               <div className="font-semibold">
                 {message.role === "assistant"
-                  ? message.assistant_id
-                    ? assistants.find(
-                        assistant => assistant.id === message.assistant_id
-                      )?.name
-                    : selectedAssistant
-                      ? selectedAssistant?.name
-                      : MODEL_DATA?.modelName
+                  ? ASSISTANT_NAME
                   : (profile?.display_name ?? profile?.username)}
               </div>
             </div>
