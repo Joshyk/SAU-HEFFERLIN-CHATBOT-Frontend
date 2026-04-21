@@ -14,6 +14,7 @@ import { useContext, useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { LLM_LIST } from "../../../lib/models/llm/llm-list"
 import {
+  createFallbackModelData,
   createTempMessages,
   handleCreateChat,
   handleCreateMessages,
@@ -273,24 +274,29 @@ export const useChatHandler = () => {
 
       validateChatSettings(
         chatSettings,
-        modelData,
         profile,
         selectedWorkspace,
         messageContent
       )
 
+      const resolvedChatSettings = chatSettings!
+      const resolvedProfile = profile!
+      const resolvedWorkspace = selectedWorkspace!
+      const resolvedModelData =
+        modelData ?? createFallbackModelData(resolvedChatSettings.model)
+
       let currentChat = selectedChat ? { ...selectedChat } : null
       const effectiveCollection =
-        modelData?.provider === "ollama"
+        resolvedModelData.provider === "ollama"
           ? await resolveSelectedCollection()
           : selectedCollection
 
       // Create chat FIRST if it doesn't exist
       if (!currentChat) {
         currentChat = await handleCreateChat(
-          chatSettings!,
-          profile!,
-          selectedWorkspace!,
+          resolvedChatSettings,
+          resolvedProfile,
+          resolvedWorkspace,
           messageContent,
           selectedAssistant!,
           newMessageFiles,
@@ -315,7 +321,7 @@ export const useChatHandler = () => {
           userInput,
           newMessageFiles,
           chatFiles,
-          chatSettings!.embeddingsProvider,
+          resolvedChatSettings.embeddingsProvider,
           sourceCount
         )
       }
@@ -324,7 +330,7 @@ export const useChatHandler = () => {
         createTempMessages(
           messageContent,
           chatMessages,
-          chatSettings!,
+          resolvedChatSettings,
           b64Images,
           isRegeneration,
           setChatMessages,
@@ -332,8 +338,8 @@ export const useChatHandler = () => {
         )
 
       let payload: ChatPayload = {
-        chatSettings: chatSettings!,
-        workspaceInstructions: selectedWorkspace!.instructions || "",
+        chatSettings: resolvedChatSettings,
+        workspaceInstructions: resolvedWorkspace.instructions || "",
         chatMessages: isRegeneration
           ? [...chatMessages]
           : [...chatMessages, tempUserChatMessage],
@@ -349,7 +355,7 @@ export const useChatHandler = () => {
 
         const formattedMessages = await buildFinalMessages(
           payload,
-          profile!,
+          resolvedProfile,
           chatImages
         )
 
@@ -379,11 +385,11 @@ export const useChatHandler = () => {
           setToolInUse
         )
       } else {
-        if (modelData!.provider === "ollama") {
+        if (resolvedModelData.provider === "ollama") {
           generatedText = await handleLocalChat(
             payload,
-            profile!,
-            chatSettings!,
+            resolvedProfile,
+            resolvedChatSettings,
             tempAssistantChatMessage,
             isRegeneration,
             newAbortController,
@@ -397,8 +403,8 @@ export const useChatHandler = () => {
         } else {
           generatedText = await handleHostedChat(
             payload,
-            profile!,
-            modelData!,
+            resolvedProfile,
+            resolvedModelData,
             tempAssistantChatMessage,
             isRegeneration,
             newAbortController,
@@ -414,9 +420,9 @@ export const useChatHandler = () => {
 
       if (!currentChat) {
         currentChat = await handleCreateChat(
-          chatSettings!,
-          profile!,
-          selectedWorkspace!,
+          resolvedChatSettings,
+          resolvedProfile,
+          resolvedWorkspace,
           messageContent,
           selectedAssistant!,
           newMessageFiles,
@@ -442,8 +448,8 @@ export const useChatHandler = () => {
       await handleCreateMessages(
         chatMessages,
         currentChat,
-        profile!,
-        modelData!,
+        resolvedProfile,
+        resolvedModelData,
         messageContent,
         generatedText,
         newMessageImages,

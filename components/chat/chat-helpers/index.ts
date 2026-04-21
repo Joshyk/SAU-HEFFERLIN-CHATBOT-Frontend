@@ -22,19 +22,24 @@ import {
 import React from "react"
 import { v4 as uuidv4 } from "uuid"
 
+export const createFallbackModelData = (modelId: string): LLM => ({
+  modelId: modelId as LLM["modelId"],
+  modelName: modelId,
+  provider: "ollama",
+  hostedId: modelId,
+  platformLink:
+    process.env.NEXT_PUBLIC_OLLAMA_URL || "https://ollama.com/library",
+  imageInput: false
+})
+
 export const validateChatSettings = (
   chatSettings: ChatSettings | null,
-  modelData: LLM | undefined,
   profile: Tables<"profiles"> | null,
   selectedWorkspace: Tables<"workspaces"> | null,
   messageContent: string
 ) => {
   if (!chatSettings) {
     throw new Error("Chat settings not found")
-  }
-
-  if (!modelData) {
-    throw new Error("Model not found")
   }
 
   if (!profile) {
