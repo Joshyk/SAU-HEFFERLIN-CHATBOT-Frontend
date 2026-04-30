@@ -9,6 +9,8 @@ import {
   buildFinalMessages,
   adaptMessagesForGoogleGemini
 } from "@/lib/build-prompt"
+import { createAssistantNdjsonStreamParser } from "@/lib/assistant-ndjson-stream"
+import type { AssistantNdjsonParseError } from "@/lib/assistant-ndjson-stream"
 import { consumeReadableStream } from "@/lib/consume-stream"
 import { Tables, TablesInsert } from "@/supabase/types"
 import {
@@ -307,7 +309,39 @@ export const processResponse = async (
   setToolInUse: React.Dispatch<React.SetStateAction<string>>
 ) => {
   let fullText = ""
-  let contentToAdd = ""
+  const assistantNdjsonParser = isHosted
+    ? null
+    : createAssistantNdjsonStreamParser()
+
+  const logNdjsonParseErrors = (errors: AssistantNdjsonParseError[]) => {
+    errors.forEach(error => {
+      console.error("Error parsing chat NDJSON line:", error)
+    })
+  }
+
+  const appendContent = (contentToAdd: string) => {
+    if (!contentToAdd) return
+
+    fullText += contentToAdd
+
+    setChatMessages(prev =>
+      prev.map(chatMessage => {
+        if (chatMessage.message.id === lastChatMessage.message.id) {
+          const updatedChatMessage: ChatMessage = {
+            message: {
+              ...chatMessage.message,
+              content: fullText
+            },
+            fileItems: chatMessage.fileItems
+          }
+
+          return updatedChatMessage
+        }
+
+        return chatMessage
+      })
+    )
+  }
 
   if (response.body) {
     await consumeReadableStream(
@@ -315,41 +349,24 @@ export const processResponse = async (
       chunk => {
         setFirstTokenReceived(true)
         setToolInUse("none")
-        try {
-          contentToAdd = isHosted
-            ? chunk
-            : chunk
-                .trimEnd()
-                .split("\n")
-                .reduce(
-                  (acc, line) => acc + JSON.parse(line).message.content,
-                  ""
-                )
-          fullText += contentToAdd
-        } catch (error) {
-          console.error("Error parsing JSON:", error)
+
+        if (isHosted) {
+          appendContent(chunk)
+          return
         }
 
-        setChatMessages(prev =>
-          prev.map(chatMessage => {
-            if (chatMessage.message.id === lastChatMessage.message.id) {
-              const updatedChatMessage: ChatMessage = {
-                message: {
-                  ...chatMessage.message,
-                  content: fullText
-                },
-                fileItems: chatMessage.fileItems
-              }
-
-              return updatedChatMessage
-            }
-
-            return chatMessage
-          })
-        )
+        const result = assistantNdjsonParser!.push(chunk)
+        logNdjsonParseErrors(result.errors)
+        appendContent(result.content)
       },
       controller.signal
     )
+
+    if (assistantNdjsonParser) {
+      const result = assistantNdjsonParser.flush()
+      logNdjsonParseErrors(result.errors)
+      appendContent(result.content)
+    }
 
     return fullText
   } else {

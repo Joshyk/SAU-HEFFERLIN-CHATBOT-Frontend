@@ -5,14 +5,21 @@ export async function consumeReadableStream(
 ): Promise<void> {
   const reader = stream.getReader()
   const decoder = new TextDecoder()
+  const abortReader = () => {
+    void reader.cancel()
+  }
 
-  signal.addEventListener("abort", () => reader.cancel(), { once: true })
+  signal.addEventListener("abort", abortReader, { once: true })
 
   try {
     while (true) {
       const { done, value } = await reader.read()
 
       if (done) {
+        const remainingText = decoder.decode()
+        if (remainingText) {
+          callback(remainingText)
+        }
         break
       }
 
@@ -27,6 +34,7 @@ export async function consumeReadableStream(
       console.error("Error consuming stream:", error)
     }
   } finally {
+    signal.removeEventListener("abort", abortReader)
     reader.releaseLock()
   }
 }
