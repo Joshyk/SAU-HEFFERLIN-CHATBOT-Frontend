@@ -9,9 +9,9 @@
     "update": "git pull origin main && npm run db-migrate && npm run db-types",
     "prepare": "husky install",
     "clean": "npm run lint:fix && npm run format:write",
-    "dev": "next dev -H 0.0.0.0 -p 3005",
+    "dev": "supabase start && next dev -H 0.0.0.0 -p 3005",
     "build": "next build",
-    "start": "next start -H 0.0.0.0 -p 3005",
+    "start": "supabase start && next start -H 0.0.0.0 -p 3005",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "analyze": "ANALYZE=true npm run build",
@@ -24,6 +24,7 @@
     "db-types": "supabase gen types typescript --local > supabase/types.ts",
     "db-pull": "supabase db remote commit",
     "db-push": "supabase db push",
+    "db-start": "supabase start",
     "test": "jest"
   },
   "dependencies": {
